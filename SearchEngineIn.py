@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
-
 
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import csv, json
 import pandas as pd
-es = Elasticsearch()
-
-
-# In[9]:
+es = Elasticsearch(['localhost'],port=9200)
 
 
 data = {}
@@ -29,7 +24,7 @@ with open('/home/maz/Information Retrieval/Search Engine/NetflixData.csv') as cs
         data["index"] = idd
 
         line2["type"] = rows['type']
-        line2["title"] = str(rows['title']).replace("'","")
+        line2["title"] = rows['title']
         
         if not rows["director"]:
             line2["director"] = ['None']
@@ -65,12 +60,6 @@ with open('/home/maz/Information Retrieval/Search Engine/NetflixData.csv') as cs
         i+=1
         print(res['result'])
 
-
-            
-        
-
-
-# In[11]:
 
 
 es.indices.refresh(index="netflixdata")
