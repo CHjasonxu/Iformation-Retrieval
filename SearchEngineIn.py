@@ -16,7 +16,7 @@ listline2 = []
 listdata = []
 director = {}
 
-with open('/home/maz/Information Retrieval/Search Engine/NetflixData.csv') as csvfile:
+with open('netflix_titles.csv', 'r', encoding='utf-8') as csvfile:
     csvReader = csv.DictReader(csvfile)
     i=1
     for rows in csvReader:
