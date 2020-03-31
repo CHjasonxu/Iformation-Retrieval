@@ -6,7 +6,9 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 import csv, json
 import pandas as pd
-es = Elasticsearch(['localhost'],port=9200)
+import os
+
+es = Elasticsearch(['localhost'],port=9200,timeout=30)
 
 
 data = {}
@@ -58,7 +60,7 @@ with open('netflix_titles.csv', 'r', encoding='utf-8') as csvfile:
 
         res = es.index(index="netflixdata", id=i, body=doc)
         i+=1
-        print(res['result'])
+     
 
 
 
@@ -68,4 +70,17 @@ res = es.search(index="netflixdata", body={"query": {"match_all": {}}})
 print("Got %d Hits:" % res['hits']['total']['value'])
 for hit in res['hits']['hits']:
     print("%(timestamp)s %(title)s: %(description)s" % hit["_source"])
+
+
+##basicmodel be,d,g,if,in,ine   after_effect no,b,l          normalization = no,h1,h2,h3,z  
+## normalization.h2/h1/h3/z/c (float values)
+
+jsontext = '{"settings":{"index":{"similarity":{"my_similarity":{"type": "DFR","basic_model": "g","after_effect": "l","normalization": "h2","normalization.h2.c": "3.0"}}}}}'
+
+
+DFRtext = "curl -X PUT ""localhost:9200/index?pretty"" -H 'Content-Type: application/json' -d'" + jsontext + "'"
+
+
+os.system(DFRtext)
+
 
