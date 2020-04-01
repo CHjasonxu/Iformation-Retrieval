@@ -6,7 +6,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 import csv, json
 import pandas as pd
-import os
+import requests
 
 es = Elasticsearch(['localhost'],port=9200,timeout=30)
 
@@ -75,12 +75,15 @@ for hit in res['hits']['hits']:
 ##basicmodel be,d,g,if,in,ine   after_effect no,b,l          normalization = no,h1,h2,h3,z  
 ## normalization.h2/h1/h3/z/c (float values)
 
-jsontext = '{"settings":{"index":{"similarity":{"my_similarity":{"type": "DFR","basic_model": "g","after_effect": "l","normalization": "h2","normalization.h2.c": "3.0"}}}}}'
+jsontext = '{"settings":{"index":{"similarity":{"my_similarity":{"type": "DFR","basic_model": "g","after_effect": "l","normalization": "h3","normalization.h2.c": "3.0"}}}}}'
+
+headers = {'Content-type': 'application/json',}
+
+DFRtext = requests.put('http://localhost:9200/index?pretty' , headers=headers, data=jsontext)
+
+print(DFRtext.json())
 
 
-DFRtext = "curl -X PUT ""localhost:9200/index?pretty"" -H 'Content-Type: application/json' -d'" + jsontext + "'"
 
-
-os.system(DFRtext)
 
 
