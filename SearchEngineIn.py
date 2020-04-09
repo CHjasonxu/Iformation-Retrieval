@@ -36,7 +36,7 @@ bm25text = requests.put('http://localhost:9200/bm25netflix?pretty' , headers=hea
 
 
 ### Scripted Similarity
-jsontfidftext = '{"settings":{"index":{"similarity":{"scripted_tfidf":{"type": "scripted","script": {"source": "double tf = Math.sqrt(doc.freq); double idf = Math.log((field.docCount+1.0)/(term.docFreq+1.0)) + 1.0; double norm = 1/Math.sqrt(doc.length); return query.boost * tf * idf * norm;"}}}}}'
+jsontfidftext = '{"settings":{"index":{"similarity":{"scripted_tfidf":{"type": "scripted","script": {"source": "double tf = Math.sqrt(doc.freq); double idf = Math.log((field.docCount+1.0)/(term.docFreq+1.0)) + 1.0; double norm = 1/Math.sqrt(doc.length); return query.boost * tf * idf * norm;"}}}}}}'
 headers = {'Content-type': 'application/json',}
 tfidftext = requests.put('http://localhost:9200/tfidfnetflix?pretty' , headers=headers, data=jsontfidftext)
 
