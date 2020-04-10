@@ -1,97 +1,85 @@
 from datetime import datetime
 from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
 from elasticsearch_dsl import Document, Text
 from pip._vendor import requests
 
 es = Elasticsearch(['localhost'],port=9200)
 
-# es.indices.get_mapping(index='netflixdata', doc_type='cast')
-#
-# es.indices.put_mapping(
-#     index="travel",
-#     doc_type="cities",
-#     body=
-#         {
-#
-#                 "properties": {
-#                     "city": {
-#                         "type": "text",
-#                         "fields": {
-#                             "keyword": {
-#                                 "type": "keyword",
-#                                 "ignore_above": 256
-#                             }
-#                         }
-#                     },
-#                     "country": {
-#                         "type": "text",
-#                         "fields": {
-#                             "keyword": {
-#                                 "type": "keyword",
-#                                 "ignore_above": 256
-#                             }
-#                         }
-#                     },
-#                     "datetime": {
-#                         "type": "date",
-#                         "format":"yyyy,MM,dd,hh,mm,ss"
-#                     }
-#                 }
-#             }
-# )
+bm25_score = []
+dfi_score = []
+ib_score = []
+dfr_score = []
+lmj_score = []
+tfidf_score =[]
+lmd_score =[]
 
-request_body = {
+##bm25netflix
+s = Search(using=es, index="bm25netflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    bm25_score.append(hit.meta.score)
+print('This is bm25_score:',bm25_score)
 
- "settings": {
-    "index": {
-      "similarity": {
-        "my_similarity": {
-          "type": "LMDirichlet",
-          "mu": "2000",
+##dfinetflix
+s = Search(using=es, index="dfinetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    dfi_score.append(hit.meta.score)
+print('This is dfi_score:',dfi_score)
 
-        }
-      }
-    }
-  }
-}
+##ibnetflix
+s = Search(using=es, index="ibnetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    ib_score.append(hit.meta.score)
+print('This is ib_score:',ib_score)
 
-print("creating 'example_index' index...")
-es.indices.create(index = 'lmdirichlet', body = request_body)
+##dfrnetflix
+s = Search(using=es, index="dfrnetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    dfr_score.append(hit.meta.score)
+print('This is dfr_score:',dfr_score)
 
+##lmjnetflix
+s = Search(using=es, index="lmjnetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    lmj_score.append(hit.meta.score)
+print('This is lmj_score:',lmj_score)
 
-# print("creating 'example_index' index...")
-# es.indices.create(index = 'example_index', body = request_body)
-# class MyDoc(Document):
-#     text_field = Text(similarity='my_similarity')
-#     class Index:
-#         settings = {
-#         "index" : {
-#             "similarity" : {
-#               "my_similarity" : {
-#                 "type" : "DFR",
-#                 "basic_model" : "g",
-#                 "after_effect" : "l",
-#                 "normalization" : "h2",
-#                 "normalization.h2.c" : "3.0"
-#               }
-#             }
-#         }
-#     }
-#
-# res = es.search(index="netflixdata", body={"query": {"match": {"type": "Movie"}}})
-# print("Got %d Hits:" % res['hits']['total']['value'])
-# for hit in res['hits']['hits']:
-#     print("%(timestamp)s %(title)s: %(description)s" % hit["_source"])
+##tfidfnetflix
+s = Search(using=es, index="tfidfnetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    tfidf_score.append(hit.meta.score)
+print('This is tfidf_score:',tfidf_score)
 
-# jsontext = '{"settings":{"index":{"similarity":{"my_similarity":{"type": "DFR","basic_model": "g","after_effect": "l","normalization": "h3","normalization.h2.c": "3.0"}}}}}'
-#
-# headers = {'Content-type': 'application/json',}
-#
-# DFRtext = requests.put('http://localhost:9200/index?pretty' , headers=headers, data=jsontext)
-#
-# print(DFRtext.json())
-
-# res = es.search(index="netflixdata", body={"query": {"match": {"type": "Movie"}}})
-# print("Got %d Hits:" % res['hits']['total']['value'])
-# for hit in res['hits']['hits']:
-#     print("%(timestamp)s %(title)s: %(description)s" % hit["_source"])
+##lmdnetflix
+s = Search(using=es, index="lmdnetflix")
+query = 'The spider man collection of parallel universes'
+fields = ["title","cast","country","description"]
+results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
+# scan() removed
+for hit in results:
+    lmd_score.append(hit.meta.score)
+print('This is lmd_score:',lmd_score)
