@@ -1,13 +1,9 @@
-from datetime import datetime
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
-from elasticsearch_dsl import Document, Text
-from pip._vendor import requests
 
 es = Elasticsearch(['localhost'],port=9200)
-label_query = 'Krish Trish Baloy'
+
 label_fields = ["title"]
-query = 'which series of Krish Trish Baloy is about India'
 fields = ["title","cast","country","description"]
 
 label_bm25_id = []
@@ -33,114 +29,67 @@ dfr_id = []
 lmj_id = []
 tfidf_id =[]
 lmd_id =[]
-##bm25label
-# s = Search(using=es, index="bm25netflix")
-# results = s.query("simple_query_string", query=label_query, fields=label_fields, auto_generate_synonyms_phrase_query=True).execute()
-# for hit in results:
-#     label_bm25_id.append(hit.meta.id)
-# print('This is label_bm25_id:',label_bm25_id)
-# ##bm25netflix
-# s = Search(using=es, index="bm25netflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# for hit in results:
-#     bm25_score.append(hit.meta.score)
-#     bm25_id.append(hit.meta.id)
-# print('This is bm25_score:',bm25_score)
-# print('This is bm25_id:',bm25_id)
 
-##dfinetflix
-# s = Search(using=es, index="dfinetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     dfi_score.append(hit.meta.score)
-#     dfi_id.append(hit.meta.id)
-# print('This is dfi_score:',dfi_score)
-# print('This is dfi_id:',dfi_id)
-#
-# ##ibnetflix
-# s = Search(using=es, index="ibnetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     ib_score.append(hit.meta.score)
-#     ib_id.append(hit.meta.id)
-# print('This is ib_score:',ib_score)
-# print('This is ib_id:',ib_id)
-#
-# ##dfrnetflix
-# s = Search(using=es, index="dfrnetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     dfr_score.append(hit.meta.score)
-#     dfr_id.append(hit.meta.id)
-# print('This is dfr_score:',dfr_score)
-# print('This is dfr_id:',dfr_id)
-#
-# ##lmjnetflix
-# s = Search(using=es, index="lmjnetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     lmj_score.append(hit.meta.score)
-#     lmj_id.append(hit.meta.id)
-# print('This is lmj_score:',lmj_score)
-# print('This is lmj_id:',lmj_id)
-#
-# ##tfidfnetflix
-# s = Search(using=es, index="tfidfnetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     tfidf_score.append(hit.meta.score)
-#     tfidf_id.append(hit.meta.id)
-# print('This is tfidf_score:',tfidf_score)
-# print('This is tfidf_id:',tfidf_id)
-#
-# ##lmdnetflix
-# s = Search(using=es, index="lmdnetflix")
-# results = s.query("simple_query_string", query=query, fields=fields, auto_generate_synonyms_phrase_query=True).execute()
-# # scan() removed
-# for hit in results:
-#     lmd_score.append(hit.meta.score)
-#     lmd_id.append(hit.meta.id)
-# print('This is lmd_score:',lmd_score)
-# print('This is lmd_id:',lmd_id)
-
-label_index = "bm25netflix"
-index = "bm25netflix"
-def label(label_index):
-    s = Search(using=es, index=label_index)
+label_id =[]
+Similarity_score=[]
+Similarity_id = []
+tmp_precision =0
+tmp_recall =0
+Ag_precision = []
+Ag_recall = []
+def label(index,label_query,label_fields):
+    label_id=[]
+    s = Search(using=es, index=index)
     results = s.query("simple_query_string", query=label_query, fields=label_fields,
                       auto_generate_synonyms_phrase_query=True).execute()
     for hit in results:
-        label_bm25_id.append(hit.meta.id)
-    print('This is label_bm25_id:', label_bm25_id)
-    return label_bm25_id
-def Similarity_module(index):
+        label_id.append(hit.meta.id)
+    # print('This is label_id:', label_id)
+    return label_id
+def Similarity_module(index,query,fields):
+    Similarity_score=[]
+    Similarity_id =[]
     s = Search(using=es, index=index)
     results = s.query("simple_query_string", query=query, fields=fields,
                       auto_generate_synonyms_phrase_query=True).execute()
     for hit in results:
-        bm25_score.append(hit.meta.score)
-        bm25_id.append(hit.meta.id)
-    print('This is bm25_score:', bm25_score)
-    print('This is bm25_id:', bm25_id)
-    return bm25_score,bm25_id
+        Similarity_score.append(hit.meta.score)
+        Similarity_id.append(hit.meta.id)
+    # print('This is Similarity_score:', Similarity_score)
+    # print('This is Similarity_id:', Similarity_id)
+    return Similarity_score,Similarity_id
 
 def cal_rec_pre(label_id,search_id):
     tmp = [val for val in label_id if val in search_id]
-    precision = len(tmp) / len(bm25_id)
-    recall = len(tmp) / len(label_bm25_id)
-    print("This is Precision:",precision)
-    print("This is Recall:",recall)
+    precision = len(tmp) / len(search_id)
+    recall = len(tmp) / len(label_id)
     return precision,recall
 
-print("-----------BM25-----------")
-label_id=label(label_index)
-module_socre,module_id=Similarity_module(index)
-cal_rec_pre(label_id,module_id)
+if __name__ == '__main__':
+    print("----------------------")
+    label_query = ['Krish Trish Baloy', 'Iron man', 'transformers', 'The Matrix', 'Star Trek', 'Vampire', 'spider man', 'Rocky', 'Avengers', 'Indiana Jones']
+    query = ['which series of Krish Trish Baloy is about India', 'a movie about cooperation of two marvel heros', 'Transformers beat Megatron', 'The matrix is about protecting Zion','Star ship explore new space','Boy and his sister meet the vampire every night', 'The spider man collection of parallel universes','Rocky fights with former Soviet soldiers', 'Avengers against thanos who has infinite stones','Indiana Jones tries to find Ark of Covenant']
+    index = ['bm25netflix', 'dfinetflix','ibnetflix','dfrnetflix','lmjnetflix','tfidfnetflix','lmdnetflix']
+    for i in range(len(index)):
+        for j in range(len(label_query)):
+            label_id = label(index[i], label_query[j], label_fields)
+            size = len(label_id)
+            Similarity_score,Similarity_id=Similarity_module(index[i],query[j],fields)
+            precision, recall = cal_rec_pre(label_id,Similarity_id)
+            tmp_precision = tmp_precision+precision
+            tmp_recall = tmp_recall+recall
+        Ag_precision.append(tmp_precision/len(label_query))
+        Ag_recall.append(tmp_recall/len(label_query))
+        tmp_precision=0
+        tmp_recall=0
+    
+    print("This is Ag_precision:",Ag_precision)
+    print("This is Ag_recall:",Ag_recall)
+
+
+
+
+
 
 
 
