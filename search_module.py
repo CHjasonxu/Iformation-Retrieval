@@ -94,15 +94,18 @@ if __name__ == '__main__':
             tmp_precision = tmp_precision+precision
             tmp_recall = tmp_recall+recall
         output_score = np.array(Similarity_score)
-        np.savetxt("%s_score"%index[i],output_score)
+        output_id = np.array(Similarity_id)
+        Output_result=np.array([output_id,output_score])
+        np.reshape(Output_result,(10,-1))
+        np.savetxt("result/%s_result"%index[i],Output_result,fmt='%s')
         Ag_precision.append(tmp_precision/len(label_query))
         Ag_recall.append(tmp_recall/len(label_query))
         tmp_precision=0
         tmp_recall=0
     ag_precision=np.array(Ag_precision)
     ag_recall=np.array(Ag_recall)
-    np.savetxt("Average_precision",ag_precision)
-    np.savetxt("Average_recall",ag_recall)
+    np.savetxt("result/Average_precision",ag_precision)
+    np.savetxt("result/Average_recall",ag_recall)
     print("This is Ag_precision:",Ag_precision)
     print("This is Ag_recall:",Ag_recall)
 
