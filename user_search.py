@@ -28,7 +28,18 @@ def Get_results(query,index,fields):
     return Similarity_score, Similarity_id, Similarity_name
 
 
-if __name__ == '__main__':
+def Standard_pattern():
+    print("----------------------")
+    print('0-BM25', '1-DFI', '2-IB', '3-DFR', '4-LMJ', '5-TF-IDF', '6-LMJ')
+    i = int(input("Please enter the number to select the model you want: "))
+    print("----------------------")
+    query = input(
+        "Please input the query you want: ")  # Example: Lord of the Rings about going to Mordor to destroy Rings
+    Get_results(query, index[i], fields)
+
+
+def Advanced_pattern():
+    field = []
     print("----------------------")
     print('0-BM25', '1-DFI', '2-IB', '3-DFR', '4-LMJ', '5-TF-IDF', '6-LMJ')
     i = int(input("Please enter the number to select the model you want: "))
@@ -37,16 +48,28 @@ if __name__ == '__main__':
           "7-duration", "8-description")
     while True:
         try:
-
             fields_selected = int(input("Please select one field you want: "))
             field += [original_fields[fields_selected]]
         except:
             break
     print(field)
     print("----------------------")
-
+    print("Select the weight of each field")
+    for j in range(len(field)):
+        weight_select = input("The value of weight: ")
+        field[j] += '^' + weight_select
+    print(field)
     print("----------------------")
-    query = input("Please input the query you want: ") # Example: Lord of the Rings about going to Mordor to destroy Rings
-
+    query = input(
+        "Please input the query you want: ")  # Example: Lord of the Rings about going to Mordor to destroy Rings
     Get_results(query, index[i], field)
 
+
+if __name__ == '__main__':
+    print("----------------------")
+    print("There are two patterns: 1-Standard or 2-Advanced")
+    pattern_select = int(input("Please input the number to select the pattern: "))
+    if pattern_select == 1:
+        Standard_pattern()
+    else:
+        Advanced_pattern()
