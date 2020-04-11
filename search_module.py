@@ -93,11 +93,11 @@ if __name__ == '__main__':
             precision, recall = cal_rec_pre(label_id,Similarity_id)
             tmp_precision = tmp_precision+precision
             tmp_recall = tmp_recall+recall
-        output_score = np.array(Similarity_score)
-        output_id = np.array(Similarity_id)
-        Output_result=np.array([output_id,output_score])
-        np.reshape(Output_result,(10,-1))
-        np.savetxt("result/%s_result"%index[i],Output_result,fmt='%s')
+            output_score = np.array(Similarity_score)
+            output_id = np.array(Similarity_id)
+            output_query = np.array(query[j])
+            Output_result=np.array([output_query,output_id,output_score])
+            np.savetxt("result/%s_query"%index[i]+"%i_result"%j,Output_result,fmt='%s')
         Ag_precision.append(tmp_precision/len(label_query))
         Ag_recall.append(tmp_recall/len(label_query))
         tmp_precision=0
