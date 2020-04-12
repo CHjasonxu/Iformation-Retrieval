@@ -224,7 +224,7 @@ def getscore(qd,df,model,lmodel):
         return final_score_combination[scorecombsc].mean(), final_rank_combination[rankcombsc].mean()
 
 
-# In[463]:
+# In[ ]:
 
 
 def Average(lst): 
@@ -252,7 +252,9 @@ def scorecombination(df,model,lmodel):
 
 lmodels = ['bm25','ib', 'dfi', 'dfr', 'tfidf', 'lmd', 'lmj']
 
+
 for i in lmodels:
+    print(lmodels)
     for j in lmodels:
         if i == j:
             continue
@@ -260,22 +262,26 @@ for i in lmodels:
             sc, rc = scorecombination(df,j,[i])  
             kk = j + '_' + i
             scoredict[kk] = sc
+#             lmodels.remove[lmodels[0]]
+
+            
 #             rankdict[kk] = rc
     
 
 
-# In[464]:
+# In[475]:
 
 
 import csv
 print(scoredict)
-print(rankdict)
 
-w = csv.writer(open("score.csv", "w"))
-for key, val in scoredict.items():
-    w.writerow([key, val])
+
+minval = min(scoredict.values())
+maxval = max(scoredict.values())
+
+for k in scoredict:
+    scoredict[k] = (scoredict[k] - minval)/(maxval - minval)
+
     
-# w = csv.writer(open("rank.csv", "w"))
-# for key, val in rankdict.items():
-#     w.writerow([key, val])
+print(scoredict)
 
