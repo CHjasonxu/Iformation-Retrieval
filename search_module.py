@@ -42,6 +42,7 @@ def Similarity_module(index,query,fields):
         Similarity_id.append(hit.meta.id)
     # print('This is Similarity_score:', Similarity_score)
     # print('This is Similarity_id:', Similarity_id)
+    Similarity_score = score_normalized(Similarity_score)
     return Similarity_score,Similarity_id
 
 def Similarity_module_weight(index,query,weight_fields):
@@ -55,6 +56,7 @@ def Similarity_module_weight(index,query,weight_fields):
         Similarity_id.append(hit.meta.id)
     # print('This is Similarity_score:', Similarity_score)
     # print('This is Similarity_id:', Similarity_id)
+    Similarity_score=score_normalized(Similarity_score)
     return Similarity_score,Similarity_id
 
 def cal_rec_pre(label_id,search_id):
@@ -63,6 +65,26 @@ def cal_rec_pre(label_id,search_id):
     recall = len(tmp) / len(search_id)
     f_measure = (2*precision*recall)/(precision+recall)
     return precision,recall,f_measure
+
+def score_normalized(Similarity_score):
+
+    normalize_score = []
+    min_score = min(Similarity_score)
+    max_score = max(Similarity_score)
+    for i in range(len(Similarity_score)):
+
+        normalize_score.append((Similarity_score[i]-min_score)/(max_score-min_score))
+    return normalize_score
+
+def Kendall_rank_correlation(model1,model2,query,fields):
+    model1_score,model1_id=Similarity_module(model1,query,fields)
+    model2_score, model2_id = Similarity_module(model2, query, fields)
+    Same_results = [val for val in model1_id if val in model2_id]
+    N = len(model1_id)
+    C = len(Same_results)
+    D = N - 2 * C
+    tau = (C - D) / (N * (N+1) / 2)
+    return tau
 
 if __name__ == '__main__':
     print("----------------------")
@@ -122,6 +144,39 @@ if __name__ == '__main__':
     print("This is W_Ag_precision:", W_Ag_precision)
     print("This is W_Ag_recall:", W_Ag_recall)
     print("This is W_Ag_f_measure:", W_Ag_f_measure)
+
+    Avg_tau = []
+    max_p = 0
+    min_p = 10000
+    for i in range(7):
+        for j in range(7):
+            tmp = 0
+            tau = 0
+            for k in range(len(query)):
+                if i < j:
+                    tau = Kendall_rank_correlation(index[i], index[j],query[k],fields)
+                    # print(tau)
+                tmp = tmp + tau
+            p = tmp/len(query)
+            if max_p < p:
+                max_p = p
+                max_indexi = i
+                max_indexj = j
+            if p != 0:
+                Avg_tau.append((index[i], index[j],p))
+
+                if min_p > p:
+                    min_p = p
+                    min_indexi = i
+                    min_indexj = j
+            tmp = 0
+            tau = 0
+            # print(index[i],index[j],(tmp/len(query)))
+    print("This is AVG_tau:",Avg_tau)
+    print("What combination has the highest tau:",index[max_indexi], index[max_indexj],max_p)
+    print("What combination has the lowest tau:", index[min_indexi], index[min_indexj],min_p)
+
+
 
 
 
