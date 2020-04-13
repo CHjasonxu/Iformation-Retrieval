@@ -69,6 +69,8 @@ def cal_rec_pre(label_id,search_id):
     tmp = [val for val in label_id if val in search_id]
     precision = len(tmp) / len(label_id)
     recall = len(tmp) / len(search_id)
+    print(precision)
+    print(recall)
     f_measure = (2*precision*recall)/(precision+recall)
     return precision,recall,f_measure
 
@@ -170,7 +172,7 @@ if __name__ == '__main__':
              'The spider man collection of parallel universes',
              'Rocky fights with former Soviet soldiers',
              'Avengers against thanos who has infinite stones',
-             'c']
+             'Indiana Jones tries to find Ark of Covenant']
     index = ['bm25netflix', 'dfinetflix','ibnetflix','dfrnetflix','lmjnetflix','tfidfnetflix','lmdnetflix']
     for i in range(len(index)):
         for j in range(len(label_query)):
