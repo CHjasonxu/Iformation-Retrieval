@@ -140,7 +140,6 @@ def socre_combination(query, index, fields):
     score_unique = []
     name_unique = sorted(set(name),key=name.index)
     sum_score = 0
-    print("ID unique is", id_unique)
     for j in range(len(id_unique)):
         location = [i for i, a in enumerate(id) if a == id_unique[j]]
         for k in range(len(location)):
