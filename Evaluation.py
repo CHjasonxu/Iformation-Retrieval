@@ -29,6 +29,8 @@ W_Ag_recall = []
 W_Ag_f_measure =[]
 
 print("----------------------")
+
+##THESE ARE THE QUERIES THAT WILL ASSESS THE EVALUATION
 label_query = ['Krish Trish and Baltiboy', 'Rings Lord', 'transformers', 'The Matrix', 'Star Trek', 'Vampire',
                'spider man', 'Rocky', 'Avengers', 'Indiana Jones']
 query = ['which series of Krish Trish Baloy is about India',
@@ -42,6 +44,8 @@ query = ['which series of Krish Trish Baloy is about India',
          'Avengers against thanos who has infinite stones',
          'Indiana Jones tries to find Ark of Covenant']
 index = ['bm25netflix', 'dfinetflix', 'ibnetflix', 'dfrnetflix', 'lmjnetflix', 'tfidfnetflix', 'lmdnetflix']
+
+##FOR LOOP GOES THROUGH ALL THE INDEXES WITHIN THE MODEL AND ASSESSES THE PRECISION AND RECALL 
 for i in range(len(index)):
     for j in range(len(label_query)):
         label_id = label(index[i], label_query[j], label_fields)
@@ -49,6 +53,7 @@ for i in range(len(index)):
         Similarity_score, Similarity_id, Similarity_title = Similarity_module(index[i], query[j], fields)
         w_Similarity_score, w_Similarity_id, w_Similarity_title = Similarity_module_weight(index[i], query[j],
                                                                                            weight_fields)
+##PRECISION CALCULATED IN cal_rec_pre, WEIGHTED PRECISION CALCULATED IN cal_rec_pre
         precision, recall, f_measure = cal_rec_pre(label_id, Similarity_id)
         w_precision, w_recall, w_f_measure = cal_rec_pre(label_id, w_Similarity_id)
         tmp_precision = tmp_precision + precision
@@ -66,6 +71,8 @@ for i in range(len(index)):
         w_output_id = np.array(w_Similarity_id)
         W_Output_result = np.array([output_query, w_output_id, w_output_score])
         np.savetxt("result/W_%s_query" % index[i] + "%i_result" % j, W_Output_result, fmt='%s')
+
+##AVERAGE PRECISION AND RECALL CALCULATED HERE
     Ag_precision.append(tmp_precision / len(label_query))
     Ag_recall.append(tmp_recall / len(label_query))
     Ag_f_measure.append(tmp_f_measure / len(label_query))
@@ -100,6 +107,8 @@ print("This is W_Ag_f_measure:", W_Ag_f_measure)
 Avg_tau = []
 max_p = 0
 min_p = 10000
+
+##CALCULATES KENDALL TAU RANK 
 for i in range(7):
     for j in range(7):
         tmp = 0
@@ -123,7 +132,6 @@ for i in range(7):
                 min_indexj = j
         tmp = 0
         tau = 0
-        # print(index[i],index[j],(tmp/len(query)))
 
 ll = Avg_tau
 text1 = [x for (x,y,z) in ll]
@@ -135,14 +143,14 @@ x = [z for (x,y,z) in ll]
 
 text3 = [a_[0:-7]+'_'+b_[0:-7] for a_, b_ in zip(text1, text2)]
 
-
+### PLOTS THE KENDALL_RAU CODE
 plt.scatter(text3, x)
 plt.xticks([])
 plt.ylabel('Average Kendall_Rau_Value')
 
 for i, txt in enumerate(text3):
     plt.annotate(txt, (text3[i], x[i]))
-
+##SAVES FIG IN RESULT FOLDER
 plt.savefig('result/Kendall_rau.png')
 
 print("This is AVG_tau:", Avg_tau)
