@@ -1,7 +1,7 @@
 # Iformation-Retrieval
-#Meta-Search Engine
+# Meta-Search Engine
 
-##Functional description
+## Functional description
 
 ```
 This is a search engine for movies and TV series hosted by Netflix. 
@@ -12,7 +12,7 @@ The system will use multiple models to search the database and the results are i
 ```
 
 
-##Development environment
+## Development environment
 
 ```
 Python: 3.7
@@ -22,7 +22,7 @@ Kibana: 7.62
 When you import the project successfully, you need to set the main file as the root file.
 
 ```
-##Project structure
+## Project structure
 
 
 ```
@@ -31,13 +31,13 @@ Standard_function:
 Search_module:
 ```
 
-##Usage
+## Usage
 ```
 1.Open and set up the connection of elasticsearch and kibana with your computer.
 2.Run the SearchingEngineIn.py and and just run it once. The data has been uploaded
 ```
 
-##Test DEMO
+## Test DEMO
 
 ```
 label_query = ['Krish Trish and Baltiboy', 
