@@ -18,7 +18,6 @@ Python: 3.7
 Elasticsearch: 7.6
 Kibana: 7.62
 
-When you import the project successfully, you need to set the main file as the sources root file.
 
 ```
 ## Project structure
@@ -39,6 +38,7 @@ When you import the project successfully, you need to set the main file as the s
   |
   |----- Evaluation.py
   
+When you import the project successfully, you need to set the main file as the sources root file.
 ```
 
 ## Usage
