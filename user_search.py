@@ -10,7 +10,7 @@ es = Elasticsearch(['localhost'],port=9200)
 label_fields = ["title"]
 original_fields = ["type","title","director","cast","country","date_added","release_year","duration","description"]
 fields = ["title","cast","country","description"]
-weight_fields =["title^2","cast^1","country^3","description^4"]
+weight_fields =["title^2","cast^1","country^1","description^4"]
 index = ['bm25netflix', 'dfinetflix', 'ibnetflix', 'dfrnetflix', 'lmjnetflix', 'tfidfnetflix', 'lmdnetflix']
 
 label_id =[]
