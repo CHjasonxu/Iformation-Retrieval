@@ -45,7 +45,7 @@ packages:
   |
   |----- Evaluation.py
   |
-  |----- Standard_Evaluation.py
+  |----- Standard_Function_Evaluation.py
   
 When you import the project successfully, you need to set the main file as the sources root file.
 ```
