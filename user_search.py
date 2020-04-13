@@ -23,20 +23,20 @@ field = []
 def Get_results_score(query,index,fields):
     score_id_name = socre_combination(query, index, fields)
     print(score_id_name)
-    for i in range(10):
+    for i in range(len(score_id_name)):
         print("Doc_%i:"%(i+1),score_id_name[:, i])
     return score_id_name
 
 def Get_results_rank(query,index,fields):
     rank_id_name = rank_combination(query, index, fields)
     print(rank_id_name)
-    for i in range(10):
+    for i in range(len(rank_id_name)):
         print("Doc_%i:"%(i+1),rank_id_name[:, i])
     return rank_id_name
 
 def Get_standard_results(query,index,fields):
     Standard_score_id_name = Standard_similarity_module(query, index, fields)
-    for i in range(10):
+    for i in range(len(Standard_score_id_name)):
         print("Doc_%i:"%(i+1),Standard_score_id_name[:, i])
     return Standard_score_id_name
 
