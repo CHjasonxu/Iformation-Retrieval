@@ -12,10 +12,18 @@ The system will use multiple models to search the database and the results are i
 
 【Development environment】
 
-
 Python: 3.7
 Elasticsearch: 7.6
 Kibana: 7.62
+
+【Related packages】
+ elasticsearch
+ elasticsearch_dsl
+ numpy
+ matplotlib.pyplot
+ datetime
+ csv
+ requests
 
 
 【Project structure】
