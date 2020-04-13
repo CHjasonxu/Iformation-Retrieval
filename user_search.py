@@ -62,7 +62,7 @@ def Advanced_pattern():
             print('0-BM25', '1-DFI', '2-IB', '3-DFR', '4-LMJ', '5-TF-IDF', '6-LMJ')
             while True:
                 try:
-                    indexs_selected = int(input("Please enter the number to select the model you want: "))
+                    indexs_selected = int(input("Please enter the number to select the model you want, press Enter when done: "))
                     indexs += [index[indexs_selected]]
                 except:
                     break
@@ -72,7 +72,7 @@ def Advanced_pattern():
                   "7-duration", "8-description")
             while True:
                 try:
-                    fields_selected = int(input("Please select one field you want: "))
+                    fields_selected = int(input("Please select one field you want, press Enter when done: "))
                     field += [original_fields[fields_selected]]
                 except:
                     break
