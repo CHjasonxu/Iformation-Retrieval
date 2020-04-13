@@ -1,4 +1,4 @@
-# Iformation-Retrieval
+# Information-Retrieval
 # Meta-Search Engine
 
 ## Functional description
