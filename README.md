@@ -18,7 +18,14 @@ Python: 3.7
 Elasticsearch: 7.6
 Kibana: 7.62
 
-
+packages:
+ elasticsearch
+ elasticsearch_dsl
+ numpy
+ matplotlib.pyplot
+ datetime
+ csv
+ requests
 ```
 ## Project structure
 
