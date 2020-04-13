@@ -2,6 +2,8 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
 import numpy as np
 from Advance_function import*
+import numpy as np
+import matplotlib.pyplot as plt
 
 es = Elasticsearch(['localhost'],port=9200)
 
@@ -122,6 +124,27 @@ for i in range(7):
         tmp = 0
         tau = 0
         # print(index[i],index[j],(tmp/len(query)))
+
+ll = Avg_tau
+text1 = [x for (x,y,z) in ll]
+print(text1)
+text2 = [y for (x,y,z) in ll]
+print(len(text2))
+x = [z for (x,y,z) in ll]
+
+
+text3 = [a_[0:-7]+'_'+b_[0:-7] for a_, b_ in zip(text1, text2)]
+
+
+plt.scatter(text3, x)
+plt.xticks([])
+plt.ylabel('Average Kendall_Rau_Value')
+
+for i, txt in enumerate(text3):
+    plt.annotate(txt, (text3[i], x[i]))
+
+plt.savefig('result/Kendall_rau.png')
+
 print("This is AVG_tau:", Avg_tau)
 print("What combination has the highest tau:", index[max_indexi], index[max_indexj], max_p)
 print("What combination has the lowest tau:", index[min_indexi], index[min_indexj], min_p)
