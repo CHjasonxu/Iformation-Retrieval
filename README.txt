@@ -42,7 +42,7 @@ Kibana: 7.62
   |
   |----- Evaluation.py
   |
-  |----- Standard_Evaluation.py
+  |----- Standard_function_Evaluation.py
 
 When you import the project successfully, you need to set the main file as the sources root file.
 
