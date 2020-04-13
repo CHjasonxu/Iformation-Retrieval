@@ -2,6 +2,7 @@ from elasticsearch import Elasticsearch
 from Advance_function import Similarity_module
 import numpy as np
 
+##Some initial variables
 fields =["title^2","cast^1","country^3","description^4"]
 index = ['bm25netflix', 'dfinetflix', 'ibnetflix', 'dfrnetflix', 'lmjnetflix', 'tfidfnetflix', 'lmdnetflix']
 indexs = []
@@ -37,6 +38,7 @@ Similarity_name =[]
 #     rank_id_name.T[np.lexsort(rank_id_name[::-1, :])].T
 #     print(rank_id_name[:, 0:10])
 
+##
 def Standard_similarity_module(query, index, fields):
     score = []
     id = []

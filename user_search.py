@@ -2,8 +2,10 @@ from elasticsearch import Elasticsearch
 from Advance_function import socre_combination,rank_combination
 from Standard_function import Standard_similarity_module
 
+##Connect with elasticsearch client
 es = Elasticsearch(['localhost'],port=9200)
 
+##Some initial variables
 label_fields = ["title"]
 original_fields = ["type","title","director","cast","country","date_added","release_year","duration","description"]
 fields = ["title","cast","country","description"]
@@ -16,7 +18,7 @@ Similarity_id = []
 Similarity_name = []
 field = []
 
-
+##call score combination function
 def Get_results_score(query,index,fields):
     score_id_name = socre_combination(query, index, fields)
     print(score_id_name[1])
@@ -25,6 +27,7 @@ def Get_results_score(query,index,fields):
         print("Doc_%i:"%(i+1),"ID:",score_id_name[1, i],"Title:",score_id_name[2, i])
     return score_id_name
 
+##call rank combination function
 def Get_results_rank(query,index,fields):
     rank_id_name = rank_combination(query, index, fields)
     # print(rank_id_name)
@@ -32,13 +35,14 @@ def Get_results_rank(query,index,fields):
         print("Doc_%i:"%(i+1),"ID:",rank_id_name[1, i],"Title:",rank_id_name[2, i])
     return rank_id_name
 
+## Standard mode, all setting is default. User just put the query
 def Get_standard_results(query,index,fields):
     Standard_score_id_name = Standard_similarity_module(query, index, fields)
     for i in range(len(Standard_score_id_name[0])):
         print("Doc_%i:"%(i+1),"ID:",Standard_score_id_name[1, i],"Title:",Standard_score_id_name[2, i])
     return Standard_score_id_name
 
-
+## Standard mode, all setting is default. User just put the query
 def Standard_pattern():
     while True:
         try:
@@ -53,6 +57,7 @@ def Standard_pattern():
             print("---------Sorry, the input is wrong, please try again!!!---------")
             break
 
+## Advanced mode, user can choose model ,field and type of combination
 def Advanced_pattern():
     field = []
     indexs = []
@@ -62,7 +67,7 @@ def Advanced_pattern():
             print('0-BM25', '1-DFI', '2-IB', '3-DFR', '4-LMJ', '5-TF-IDF', '6-LMJ')
             while True:
                 try:
-                    indexs_selected = int(input("Please enter the number to select the model you want, press Enter when done: "))
+                    indexs_selected = int(input("Please enter the number to select the model you want: "))
                     indexs += [index[indexs_selected]]
                 except:
                     break
@@ -72,7 +77,7 @@ def Advanced_pattern():
                   "7-duration", "8-description")
             while True:
                 try:
-                    fields_selected = int(input("Please select one field you want, press Enter when done: "))
+                    fields_selected = int(input("Please select one field you want: "))
                     field += [original_fields[fields_selected]]
                 except:
                     break

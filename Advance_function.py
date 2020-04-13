@@ -2,8 +2,10 @@ from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search
 import numpy as np
 
+##Connect with elasticsearch client
 es = Elasticsearch(['localhost'],port=9200)
 
+##Some initial variables
 label_fields = ["title"]
 fields = ["title","cast","country","description"]
 weight_fields =["title^2","cast^1","country^1","description^3"]
@@ -24,6 +26,8 @@ Ag_f_measure = []
 W_Ag_precision = []
 W_Ag_recall = []
 W_Ag_f_measure =[]
+
+##Give label_query to return our label_id through this function
 def label(index,label_query,label_fields):
     label_id=[]
     s = Search(using=es, index=index)
@@ -33,6 +37,8 @@ def label(index,label_query,label_fields):
         label_id.append(hit.meta.id)
     # print('This is label_id:', label_id)
     return label_id
+
+##Use different models to search and match the query and return the score, id and name
 def Similarity_module(index,query,fields):
     Similarity_score=[]
     Similarity_id =[]
@@ -40,6 +46,7 @@ def Similarity_module(index,query,fields):
     s = Search(using=es, index=index)
     results = s.query("simple_query_string", query=query, fields=fields,
                       auto_generate_synonyms_phrase_query=True).execute()
+
     for hit in results:
         Similarity_score.append(hit.meta.score)
         Similarity_id.append(hit.meta.id)
@@ -49,6 +56,8 @@ def Similarity_module(index,query,fields):
     Similarity_score = score_normalized(Similarity_score)
     return Similarity_score,Similarity_id,Similarity_title
 
+##Use different models to search and match the query and return the score, id and name,
+##Added each term in the field, giving different weights.
 def Similarity_module_weight(index,query,weight_fields):
     Similarity_score=[]
     Similarity_id =[]
@@ -65,6 +74,7 @@ def Similarity_module_weight(index,query,weight_fields):
     Similarity_score=score_normalized(Similarity_score)
     return Similarity_score,Similarity_id,Similarity_title
 
+##Calculate model accuracy, recall rate and Harmonic Mean
 def cal_rec_pre(label_id,search_id):
     tmp = [val for val in label_id if val in search_id]
     precision = len(tmp) / len(label_id)
@@ -72,6 +82,7 @@ def cal_rec_pre(label_id,search_id):
     f_measure = (2*precision*recall)/(precision+recall)
     return precision,recall,f_measure
 
+##Normalize the returned document score (min-max)
 def score_normalized(Similarity_score):
     normalize_score = []
     min_score = min(Similarity_score)
@@ -87,7 +98,7 @@ def score_normalized(Similarity_score):
         except:
             break
 
-
+## Calculation of diversity between models
 def Kendall_rank_correlation(model1,model2,query,fields):
     model1_score,model1_id,_=Similarity_module(model1,query,fields)
     model2_score, model2_id,_ = Similarity_module(model2, query, fields)
@@ -98,6 +109,7 @@ def Kendall_rank_correlation(model1,model2,query,fields):
     tau = (C - D) / (N * (N+1) / 2)
     return tau
 
+##Ranking combination, you can combine multiple models and return the new document score, id and name
 def rank_combination(query,index,fields):
     score = []
     id = []
@@ -131,6 +143,7 @@ def rank_combination(query,index,fields):
     # print(rank_id_name[:, 0:10])
     return rank_id_name[:, 0:10]
 
+##scoring combination, you can combine multiple models and return the new document score, id and name
 def socre_combination(query, index, fields):
     score = []
     id = []

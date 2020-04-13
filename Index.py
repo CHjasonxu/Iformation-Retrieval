@@ -6,9 +6,10 @@ from elasticsearch import Elasticsearch
 import csv
 import requests
 
+##Connect with elasticsearch client
 es = Elasticsearch(['localhost'],port=9200,timeout=30)
 
-
+##Some initial variables
 data = {}
 idd = {}
 line2 = {}
@@ -211,7 +212,6 @@ print("Got %d Hits:" % res_lmj['hits']['total']['value'])
 
 res_ib = es.search(index="ibnetflix", body={"query": {"match_all": {}}})
 print("Got %d Hits:" % res_ib['hits']['total']['value'])
-
 
 
 
