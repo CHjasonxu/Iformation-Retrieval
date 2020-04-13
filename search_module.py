@@ -10,6 +10,8 @@ weight_fields =["title^2","cast^1","country^1","description^3"]
 label_id =[]
 Similarity_score=[]
 Similarity_id = []
+Similarity_title = []
+Similarity_name =[]
 tmp_precision =0
 tmp_recall =0
 tmp_f_measure =0
@@ -34,30 +36,34 @@ def label(index,label_query,label_fields):
 def Similarity_module(index,query,fields):
     Similarity_score=[]
     Similarity_id =[]
+    Similarity_title = []
     s = Search(using=es, index=index)
     results = s.query("simple_query_string", query=query, fields=fields,
                       auto_generate_synonyms_phrase_query=True).execute()
     for hit in results:
         Similarity_score.append(hit.meta.score)
         Similarity_id.append(hit.meta.id)
+        Similarity_title.append(hit.title)
     # print('This is Similarity_score:', Similarity_score)
     # print('This is Similarity_id:', Similarity_id)
     Similarity_score = score_normalized(Similarity_score)
-    return Similarity_score,Similarity_id
+    return Similarity_score,Similarity_id,Similarity_title
 
 def Similarity_module_weight(index,query,weight_fields):
     Similarity_score=[]
     Similarity_id =[]
+    Similarity_title = []
     s = Search(using=es, index=index)
     results = s.query("simple_query_string", query=query, fields=weight_fields,
                       auto_generate_synonyms_phrase_query=True).execute()
     for hit in results:
         Similarity_score.append(hit.meta.score)
         Similarity_id.append(hit.meta.id)
+        Similarity_title.append(hit.title)
     # print('This is Similarity_score:', Similarity_score)
     # print('This is Similarity_id:', Similarity_id)
     Similarity_score=score_normalized(Similarity_score)
-    return Similarity_score,Similarity_id
+    return Similarity_score,Similarity_id,Similarity_title
 
 def cal_rec_pre(label_id,search_id):
     tmp = [val for val in label_id if val in search_id]
@@ -77,8 +83,8 @@ def score_normalized(Similarity_score):
     return normalize_score
 
 def Kendall_rank_correlation(model1,model2,query,fields):
-    model1_score,model1_id=Similarity_module(model1,query,fields)
-    model2_score, model2_id = Similarity_module(model2, query, fields)
+    model1_score,model1_id,_=Similarity_module(model1,query,fields)
+    model2_score, model2_id,_ = Similarity_module(model2, query, fields)
     Same_results = [val for val in model1_id if val in model2_id]
     N = len(model1_id)
     C = len(Same_results)
@@ -86,17 +92,92 @@ def Kendall_rank_correlation(model1,model2,query,fields):
     tau = (C - D) / (N * (N+1) / 2)
     return tau
 
+def rank_combination(query,index,fields):
+    score = []
+    id = []
+    name = []
+    rank = []
+    for i in range(len(index)):
+        _, Similarity_id, Similarity_name = Similarity_module(index[i], query, fields)
+        rank += [1,2,3,4,5,6,7,8,9,10]
+        id += Similarity_id
+        name += Similarity_name
+    # print(id)
+    id_unique = sorted(set(id), key=id.index)
+    rank_unique = []
+    name_unique = sorted(set(name), key=name.index)
+    sum_rank = 0
+    for j in range (len(id_unique)):
+        location = [i for i, a in enumerate(id) if a == id_unique[j]]
+        for k in range(len(location)):
+            sum_rank = sum_rank + rank[location[k]]
+        avg_rank = sum_rank/len(location)
+        rank_unique.append(float(avg_rank))
+        sum_rank = 0
+    rank_unique = np.array(rank_unique, dtype=np.float32)
+    id_unique = np.array(id_unique, dtype=np.int32)
+    name_unique = np.array(name_unique)
+    rank_unique = rank_unique[np.argsort(rank_unique)]
+    id_unique = id_unique[np.argsort(rank_unique)]
+    name_unique = name_unique[np.argsort(rank_unique)]
+    rank_id_name = np.array([rank_unique,id_unique,name_unique])
+
+    # print(rank_id_name[:, 0:10])
+    return rank_id_name[:, 0:10]
+
+def socre_combination(query, index, fields):
+    score = []
+    id = []
+    name = []
+    for i in range(len(index)):
+        Similarity_score, Similarity_id, Similarity_name = Similarity_module(index[i], query, fields)
+        score += Similarity_score
+        id += Similarity_id
+        name += Similarity_name
+    id_unique = sorted(set(id), key=id.index)
+    score_unique = []
+    name_unique = sorted(set(name),key=name.index)
+    sum_score = 0
+    for j in range(len(id_unique)):
+        location = [i for i, a in enumerate(id) if a == id_unique[j]]
+        for k in range(len(location)):
+            sum_score = sum_score + score[location[k]]
+        avg_score = sum_score / len(location)
+        score_unique.append(float(avg_score))
+
+        sum_score = 0
+    score_unique = np.array(score_unique, dtype=np.float32)
+    id_unique = np.array(id_unique,dtype=np.int32)
+    name_unique = np.array(name_unique)
+    score_unique = score_unique[np.argsort(-score_unique)]
+    id_unique=id_unique[np.argsort(-score_unique)]
+    name_unique =name_unique[np.argsort(-score_unique)]
+    score_id_name = np.array([score_unique, id_unique, name_unique])
+    # print(score_id_name)
+    return score_id_name[:, 0:10]
+
+
 if __name__ == '__main__':
     print("----------------------")
-    label_query = ['Krish Trish and Baltiboy', 'Rings Lord', 'transformers', 'The Matrix', 'Star Trek', 'Vampire', 'spider man', 'Rocky', 'Avengers', 'Indiana Jones']
-    query = ['which series of Krish Trish Baloy is about India', 'Lord of the Rings about going to Mordor to destroy Rings', 'Transformers beat Megatron', 'The matrix is about protecting Zion','Star ship explore new space','Boy and his sister meet the vampire every night', 'The spider man collection of parallel universes','Rocky fights with former Soviet soldiers', 'Avengers against thanos who has infinite stones','Indiana Jones tries to find Ark of Covenant']
+    label_query = ['Krish Trish and Baltiboy', 'Rings Lord', 'transformers', 'The Matrix', 'Star Trek', 'Vampire',
+                   'spider man', 'Rocky', 'Avengers', 'Indiana Jones']
+    query = ['which series of Krish Trish Baloy is about India',
+             'Lord of the Rings about going to Mordor to destroy Rings',
+             'Transformers beat Megatron',
+             'The matrix is about protecting Zion',
+             'Star ship explore new space',
+             'Boy and his sister meet the vampire every night',
+             'The spider man collection of parallel universes',
+             'Rocky fights with former Soviet soldiers',
+             'Avengers against thanos who has infinite stones',
+             'c']
     index = ['bm25netflix', 'dfinetflix','ibnetflix','dfrnetflix','lmjnetflix','tfidfnetflix','lmdnetflix']
     for i in range(len(index)):
         for j in range(len(label_query)):
             label_id = label(index[i], label_query[j], label_fields)
             size = len(label_id)
-            Similarity_score,Similarity_id=Similarity_module(index[i],query[j],fields)
-            w_Similarity_score,w_Similarity_id=Similarity_module_weight(index[i],query[j],weight_fields)
+            Similarity_score,Similarity_id,Similarity_title=Similarity_module(index[i],query[j],fields)
+            w_Similarity_score,w_Similarity_id,w_Similarity_title=Similarity_module_weight(index[i],query[j],weight_fields)
             precision, recall,f_measure = cal_rec_pre(label_id,Similarity_id)
             w_precision, w_recall,w_f_measure =cal_rec_pre(label_id,w_Similarity_id)
             tmp_precision = tmp_precision+precision
